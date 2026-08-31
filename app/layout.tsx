@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './freezer-diagram.css';
+import './edit-session.css';
 import EditCodeSession from './EditCodeSession';
 
 export const metadata: Metadata = {
