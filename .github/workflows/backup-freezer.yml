@@ -1,0 +1,49 @@
+name: Backup freezer data
+
+on:
+  schedule:
+    # GitHub Actions cron uses UTC. 21:00 UTC = 05:00 China/Hong Kong time (UTC+8) next day.
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export freezer slots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p backup
+          stamp="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+          base='https://mmuqrizmpfqgyajgcfwa.supabase.co/rest/v1/freezer_slots?select=id,occupant,updated_at&order=id.asc'
+          key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdXFyaXptcGZxZ3lhamdjZndhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxNzE5NTUsImV4cCI6MjEwMzc0Nzk1NX0.KEgQ9iYtzvrUigafGSXioMF0COrIn7wksk684y6gIWg'
+
+          curl --fail --silent --show-error \
+            "$base" \
+            -H "apikey: $key" \
+            -H "Authorization: Bearer $key" \
+            -H 'Accept: application/json' \
+            -o "backup/freezer-${stamp}.json"
+
+          curl --fail --silent --show-error \
+            "$base" \
+            -H "apikey: $key" \
+            -H "Authorization: Bearer $key" \
+            -H 'Accept: text/csv' \
+            -o "backup/freezer-${stamp}.csv"
+
+          test -s "backup/freezer-${stamp}.json"
+          test -s "backup/freezer-${stamp}.csv"
+
+      - name: Upload 90-day backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: freezer-backup-${{ github.run_id }}
+          path: backup/
+          retention-days: 90
+          if-no-files-found: error
+          compression-level: 9
