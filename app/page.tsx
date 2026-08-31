@@ -20,7 +20,7 @@ function emptySlots(): Slot[] {
 }
 
 function ownerKey(occupant: string) {
-  return occupant.trim().toLocaleLowerCase().split(/[-\/_]/, 1)[0].trim();
+  return occupant.trim().toLocaleLowerCase().split(/[-\/_.,，]/, 1)[0].trim();
 }
 
 function occupantStyle(occupant: string): CSSProperties {
