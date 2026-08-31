@@ -1,0 +1,22 @@
+.security-tools { display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.security-tools button { border:1px solid #c8ded9; border-radius:999px; padding:7px 10px; background:#f8fcfb; color:#426d68; font-size:10px; font-weight:750; cursor:pointer; }
+.security-tools button:hover { border-color:#91c6bc; }
+.security-tools .trusted { border-color:#a9d6cd; background:#eaf7f4; color:#0a7167; }
+.trusted-note { margin:9px 0 2px; border:1px solid #b9ddd6; border-radius:11px; padding:9px 10px; background:#eef9f7; color:#176d64; font-size:11px; line-height:1.45; }
+.history-modal { max-height:min(78vh,680px); overflow:hidden; display:flex; flex-direction:column; }
+.history-head { flex:0 0 auto; padding-right:34px; }
+.history-head h2 { margin-bottom:5px; }
+.history-head p:last-child { margin:0 0 12px; color:#61777a; font-size:11px; line-height:1.45; }
+.history-list { min-height:120px; max-height:52vh; overflow:auto; margin:0 -2px; padding:2px; }
+.history-state { display:grid; place-items:center; min-height:120px; color:#61777a; font-size:12px; text-align:center; }
+.history-item { border-bottom:1px solid #e4eeec; padding:11px 4px; }
+.history-item:last-child { border-bottom:0; }
+.history-item-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.history-slot { color:#0a7167; font-size:12px; font-weight:850; }
+.history-time { color:#78908d; font-size:9px; white-space:nowrap; }
+.history-change { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:7px; margin-top:7px; }
+.history-value { min-width:0; border:1px solid #d8e7e4; border-radius:9px; padding:7px 8px; background:#f9fcfb; color:#405f5c; font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.history-value.empty { color:#98aaa7; font-style:italic; }
+.history-arrow { color:#87a29e; font-size:12px; }
+.history-refresh { flex:0 0 auto; margin-top:11px; border:1px solid #bfdad5; border-radius:10px; padding:9px 11px; background:#f3faf8; color:#176d64; font-size:11px; font-weight:800; cursor:pointer; }
+@media(max-width:520px){ .history-change { grid-template-columns:1fr; gap:4px; } .history-arrow { transform:rotate(90deg); justify-self:center; } }
