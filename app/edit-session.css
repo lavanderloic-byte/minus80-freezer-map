@@ -4,7 +4,7 @@ body.edit-code-remembered .code-input {
 }
 
 body.edit-code-remembered .slot-modal::after {
-  content: '🔓 本机已记住编辑权限（30 天）';
+  content: '🔓 本机已永久记住编辑权限';
   display: block;
   margin-top: 10px;
   color: #5f7774;
