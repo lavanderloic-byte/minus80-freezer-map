@@ -1,178 +1,21 @@
-.depth-guide {
-  position: relative;
-  display: block;
-  min-height: 250px;
-  margin-top: 14px;
-  overflow: hidden;
-  border: 1px solid #c8e0db;
-  border-radius: 18px;
-  padding: 22px 22px 24px;
-  background: linear-gradient(180deg, #f9fdfc 0%, #eef8f6 100%);
-  isolation: isolate;
-}
-
-.depth-guide::before {
-  content: "L  冰箱大层\A L1  顶部\A L2\A L3\A L4  底部";
-  position: absolute;
-  left: 18px;
-  top: 48px;
-  z-index: 4;
-  width: 88px;
-  white-space: pre-line;
-  color: #446e69;
-  font-size: 10px;
-  font-weight: 750;
-  line-height: 2.05;
-}
-
-.depth-guide::after {
-  content: "C1     C2     C3     C4     C5\A      C · 从左到右\A\A H1\A H2\A H3\A H4\A H5\A H · 从上到下";
-  position: absolute;
-  left: 122px;
-  top: 22px;
-  z-index: 5;
-  width: 300px;
-  white-space: pre-line;
-  pointer-events: none;
-  color: #3f706a;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1.48;
-  letter-spacing: .01em;
-}
-
-.depth-guide > div:first-child,
-.depth-guide > .inside {
-  position: absolute;
-  z-index: 6;
-  min-width: 0;
-  text-align: left;
-}
-
-.depth-guide > div:first-child {
-  left: 125px;
-  bottom: 16px;
-}
-
-.depth-guide > .inside {
-  right: 18px;
-  top: 58px;
-  text-align: right;
-}
-
-.depth-guide > div:first-child strong,
-.depth-guide > .inside strong {
-  color: #0d6f66;
-  font-size: 10px;
-}
-
-.depth-guide > div:first-child span,
-.depth-guide > .inside span {
-  color: #708784;
-  font-size: 8px;
-}
-
-.depth-guide ol {
-  position: absolute;
-  left: 135px;
-  top: 82px;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  width: min(62%, 420px);
-  height: 118px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  transform: perspective(520px) rotateX(58deg) rotateZ(-8deg) skewX(-3deg);
-  transform-origin: 30% 80%;
-  border: 1px solid #7fbab1;
-  border-radius: 5px;
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 calc(20% - 1px), rgba(35,116,106,.22) calc(20% - 1px) 20%),
-    repeating-linear-gradient(to right, transparent 0 calc(20% - 1px), rgba(35,116,106,.20) calc(20% - 1px) 20%),
-    linear-gradient(135deg, rgba(255,255,255,.96), rgba(208,238,233,.96));
-  box-shadow: 18px 22px 26px rgba(19,76,70,.13);
-}
-
-.depth-guide ol::before {
-  content: "";
-  position: absolute;
-  left: -16px;
-  top: 10px;
-  width: 16px;
-  height: 100%;
-  border-left: 1px solid #82bdb4;
-  border-bottom: 1px solid #82bdb4;
-  background: repeating-linear-gradient(to bottom, rgba(193,229,223,.92) 0 calc(25% - 1px), #82bdb4 calc(25% - 1px) 25%);
-  transform: skewY(37deg);
-  transform-origin: right top;
-}
-
-.depth-guide ol::after {
-  content: "";
-  position: absolute;
-  right: -22px;
-  top: 9px;
-  width: 22px;
-  height: 100%;
-  border-right: 1px solid #72aaa2;
-  border-bottom: 1px solid #72aaa2;
-  background: repeating-linear-gradient(to bottom, rgba(167,216,208,.92) 0 calc(25% - 1px), #72aaa2 calc(25% - 1px) 25%);
-  transform: skewY(37deg);
-  transform-origin: left top;
-}
-
-.depth-guide li {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  min-width: 0;
-  border: 0;
-  border-right: 1px dashed rgba(17,111,101,.36);
-  border-radius: 0;
-  padding: 0 2px 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,.20), rgba(90,181,167,.08));
-  color: #0a6c62;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.depth-guide li:last-child { border-right: 0; }
-
-.depth-guide li::before {
-  content: "";
-  position: absolute;
-  inset: 7px 6px 30px;
-  border: 1px solid rgba(47,132,121,.22);
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 calc(20% - 1px), rgba(47,132,121,.18) calc(20% - 1px) 20%),
-    repeating-linear-gradient(to right, transparent 0 calc(20% - 1px), rgba(47,132,121,.16) calc(20% - 1px) 20%);
-}
-
-.depth-guide li:first-child::after {
-  content: "D · 深度  D1 → D2 → D3 → D4";
-  position: absolute;
-  left: 2px;
-  bottom: -31px;
-  width: 260px;
-  transform: rotateZ(8deg) skewX(3deg);
-  transform-origin: left center;
-  color: #426c67;
-  font-size: 9px;
-  font-weight: 800;
-  text-align: left;
-}
-
-@media (max-width: 600px) {
-  .depth-guide { min-height: 226px; padding-inline: 12px; }
-  .depth-guide::before { left: 10px; top: 53px; width: 64px; font-size: 8px; line-height: 2.2; }
-  .depth-guide::after { left: 82px; top: 18px; width: 245px; font-size: 7px; }
-  .depth-guide ol { left: 91px; top: 80px; width: 62%; height: 102px; }
-  .depth-guide > div:first-child { left: 84px; bottom: 12px; }
-  .depth-guide > .inside { right: 10px; top: 52px; }
-  .depth-guide li:first-child::after { width: 210px; font-size: 7px; }
-}
+.depth-guide { display:none !important; }
+.freezer-25d { position:relative; min-height:260px; margin-top:14px; overflow:hidden; border:1px solid #c8e0db; border-radius:18px; background:linear-gradient(180deg,#fbfefd,#edf8f5); }
+.freezer-front { position:absolute; left:10%; top:28px; width:58%; height:195px; border:2px solid #73b8ad; border-radius:8px; background:rgba(255,255,255,.88); box-shadow:14px 15px 25px rgba(26,90,82,.10); }
+.axis-c { position:absolute; left:17%; right:3%; top:-22px; color:#39766e; font-size:9px; font-weight:800; text-align:center; white-space:nowrap; }
+.freezer-level { display:grid; grid-template-columns:38px 1fr; align-items:center; height:25%; border-bottom:1px solid #acd2cc; }
+.freezer-level:last-child { border-bottom:0; }
+.freezer-level>b { color:#087f73; font-size:11px; text-align:center; }
+.mini-rack { display:grid; grid-template-columns:repeat(5,1fr); height:100%; border-left:1px solid #acd2cc; }
+.mini-rack span { display:flex; align-items:center; justify-content:center; border-right:1px solid #d2e7e3; color:#78918d; font-size:7px; }
+.depth-cube { position:absolute; right:7%; bottom:48px; display:grid; grid-template-columns:repeat(4,34px); transform:skewY(-18deg); transform-origin:left bottom; }
+.depth-cube span { display:grid; place-items:center; height:48px; border:1px solid #8fc8bf; border-right:0; background:rgba(219,241,237,.94); color:#126f66; font-size:9px; font-weight:850; }
+.depth-cube span:last-child { border-right:1px solid #8fc8bf; }
+.depth-cube::before { content:'抽出一个 H 架子'; position:absolute; left:0; top:-25px; transform:skewY(18deg); color:#557b76; font-size:8px; font-weight:750; }
+.door-label,.inside-label { position:absolute; bottom:15px; color:#547873; font-size:9px; font-weight:800; }
+.door-label { right:8%; }
+.inside-label { right:37%; }
+.door-label::before { content:'← '; color:#087f73; }
+.inside-label::after { content:' →'; color:#087f73; }
+.diagram-note { margin:11px 2px 0; color:#4f686a; font-size:10px; line-height:1.65; }
+.diagram-note b { color:#087f73; }
+@media(max-width:600px){.freezer-25d{min-height:230px}.freezer-front{left:6%;top:30px;width:61%;height:170px}.depth-cube{right:5%;bottom:42px;grid-template-columns:repeat(4,25px)}.depth-cube span{height:40px;font-size:7px}.axis-c{font-size:7px}.freezer-level>b{font-size:9px}.mini-rack span{font-size:6px}.door-label,.inside-label{font-size:7px}.inside-label{right:35%}}
