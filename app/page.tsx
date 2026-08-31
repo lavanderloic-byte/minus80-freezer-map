@@ -19,8 +19,12 @@ function emptySlots(): Slot[] {
   ).flat());
 }
 
+function ownerKey(occupant: string) {
+  return occupant.trim().toLocaleLowerCase().split(/[-\/_]/, 1)[0].trim();
+}
+
 function occupantStyle(occupant: string): CSSProperties {
-  const key = occupant.trim().toLocaleLowerCase();
+  const key = ownerKey(occupant);
   let hash = 0;
   for (let i = 0; i < key.length; i += 1) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
   const hue = Math.abs(hash) % 360;
@@ -225,7 +229,15 @@ export default function Home() {
           <div className="code-guide"><strong>H</strong><span>Height · 架子高度</span><small>H1 上层 → H5 下层</small></div>
           <div className="code-guide"><strong>D</strong><span>Depth · 前后深度</span><small>D1 靠门 → D4 靠冰箱内部</small></div>
         </div>
-        <div className="depth-guide"><div><strong>门口</strong><span>取样方向</span></div><ol><li>D1</li><li>D2</li><li>D3</li><li>D4</li></ol><div className="inside"><strong>冰箱内部</strong><span>越往里 D 越大</span></div></div>
+        <div className="freezer-25d" aria-label="Freezer position diagram">
+          <div className="freezer-front">
+            <div className="axis-c">C1　 C2　 C3　 C4　 C5</div>
+            {levels.map((level) => <div className="freezer-level" key={level}><b>{level}</b><div className="mini-rack">{Array.from({ length: 5 }, (_, i) => <span key={i}>H{i + 1}</span>)}</div></div>)}
+          </div>
+          <div className="depth-cube"><span>D4</span><span>D3</span><span>D2</span><span>D1</span></div>
+          <div className="door-label">门口</div><div className="inside-label">冰箱内部</div>
+        </div>
+        <p className="diagram-note">先选 <b>L</b> 大层；正面从左到右是 <b>C1–C5</b>，每个架子从上到下是 <b>H1–H5</b>；抽出对应架子后，从门口往里依次是 <b>D1–D4</b>。</p>
         <p className="example-line"><strong>例如：</strong>L2-C3-H4-D1 = 第 2 大层 → 第 3 列架子 → 第 4 层高 → 最靠门的位置。</p>
       </section>
 
