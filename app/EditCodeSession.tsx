@@ -3,20 +3,22 @@
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'freezer_edit_session_v1';
-const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-type StoredSession = { code: string; expiresAt: number };
+type StoredSession = { code: string };
 
 function readSession(): StoredSession | null {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as StoredSession;
-    if (!parsed.code || !parsed.expiresAt || parsed.expiresAt <= Date.now()) {
+    const parsed = JSON.parse(raw) as StoredSession & { expiresAt?: number };
+    if (!parsed.code) {
       window.localStorage.removeItem(STORAGE_KEY);
       return null;
     }
-    return parsed;
+    // Older 30-day sessions are upgraded automatically to permanent local trust.
+    const permanent = { code: parsed.code };
+    if ('expiresAt' in parsed) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(permanent));
+    return permanent;
   } catch {
     return null;
   }
@@ -64,7 +66,7 @@ export default function EditCodeSession() {
       const input = dialog?.querySelector<HTMLInputElement>('.code-input');
       const code = input?.value.trim();
       if (!code) return;
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, expiresAt: Date.now() + THIRTY_DAYS }));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ code }));
       setRemembered(true);
       document.body.classList.add('edit-code-remembered');
     };
