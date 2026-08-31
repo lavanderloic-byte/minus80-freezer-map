@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './freezer-diagram.css';
 import './edit-session.css';
+import './history.css';
 import EditCodeSession from './EditCodeSession';
+import HistoryPanel from './HistoryPanel';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL ?? 'http://localhost:3000'),
@@ -22,5 +24,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="zh-CN"><body>{children}<EditCodeSession /></body></html>;
+  return <html lang="zh-CN"><body>{children}<HistoryPanel /><EditCodeSession /></body></html>;
 }
