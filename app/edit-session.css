@@ -1,0 +1,13 @@
+body.edit-code-remembered .code-label,
+body.edit-code-remembered .code-input {
+  display: none !important;
+}
+
+body.edit-code-remembered .slot-modal::after {
+  content: '🔓 本机已记住编辑权限（30 天）';
+  display: block;
+  margin-top: 10px;
+  color: #5f7774;
+  font-size: 10px;
+  text-align: center;
+}
