@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 
 const levels = ['L1', 'L2', 'L3', 'L4'] as const;
@@ -17,6 +17,18 @@ function emptySlots(): Slot[] {
       level, column, height: `H${h + 1}`, depth: `D${d + 1}`, occupant: '',
     }))).flat(),
   ).flat());
+}
+
+function occupantStyle(occupant: string): CSSProperties {
+  const key = occupant.trim().toLocaleLowerCase();
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  const hue = Math.abs(hash) % 360;
+  return {
+    '--occupant-bg': `hsl(${hue} 68% 91%)`,
+    '--occupant-border': `hsl(${hue} 48% 64%)`,
+    '--occupant-text': `hsl(${hue} 48% 28%)`,
+  } as CSSProperties;
 }
 
 export default function Home() {
@@ -104,9 +116,18 @@ export default function Home() {
   };
 
   const toggleDepthGroup = (height: string, column: string) => {
-    const ids = levelSlots
-      .filter((slot) => slot.height === height && slot.column === column)
-      .map((slot) => slot.id);
+    const ids = levelSlots.filter((slot) => slot.height === height && slot.column === column).map((slot) => slot.id);
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      const allSelected = ids.every((id) => next.has(id));
+      ids.forEach((id) => allSelected ? next.delete(id) : next.add(id));
+      return next;
+    });
+  };
+
+  const toggleColumn = (column: string) => {
+    if (!batchMode) return;
+    const ids = levelSlots.filter((slot) => slot.column === column).map((slot) => slot.id);
     setSelectedIds((current) => {
       const next = new Set(current);
       const allSelected = ids.every((id) => next.has(id));
@@ -197,41 +218,36 @@ export default function Home() {
       </section>
 
       <section className="position-guide" aria-label="Position code guide">
-        <div className="guide-heading">
-          <div><p className="eyebrow">位置编号说明</p><h2>先看懂 L · C · H · D</h2></div>
-          <code>L2-C3-H4-D1</code>
-        </div>
+        <div className="guide-heading"><div><p className="eyebrow">位置编号说明</p><h2>先看懂 L · C · H · D</h2></div><code>L2-C3-H4-D1</code></div>
         <div className="guide-grid">
           <div className="code-guide"><strong>L</strong><span>Level · 冰箱大层</span><small>L1 顶部 → L4 底部</small></div>
           <div className="code-guide"><strong>C</strong><span>Column · 架子列</span><small>C1 左侧 → C5 右侧</small></div>
           <div className="code-guide"><strong>H</strong><span>Height · 架子高度</span><small>H1 上层 → H5 下层</small></div>
           <div className="code-guide"><strong>D</strong><span>Depth · 前后深度</span><small>D1 靠门 → D4 靠冰箱内部</small></div>
         </div>
-        <div className="depth-guide">
-          <div><strong>门口</strong><span>取样方向</span></div>
-          <ol><li>D1</li><li>D2</li><li>D3</li><li>D4</li></ol>
-          <div className="inside"><strong>冰箱内部</strong><span>越往里 D 越大</span></div>
-        </div>
+        <div className="depth-guide"><div><strong>门口</strong><span>取样方向</span></div><ol><li>D1</li><li>D2</li><li>D3</li><li>D4</li></ol><div className="inside"><strong>冰箱内部</strong><span>越往里 D 越大</span></div></div>
         <p className="example-line"><strong>例如：</strong>L2-C3-H4-D1 = 第 2 大层 → 第 3 列架子 → 第 4 层高 → 最靠门的位置。</p>
       </section>
 
       <section className="map-card">
-        <div className="map-heading">
-          <div><p className="eyebrow">冰箱地图</p><h2>选择一个位置</h2></div>
-          <button className={`batch-toggle ${batchMode ? 'active' : ''}`} onClick={toggleBatchMode}>{batchMode ? '退出批量选择' : '＋ 批量占用'}</button>
-        </div>
+        <div className="map-heading"><div><p className="eyebrow">冰箱地图</p><h2>选择一个位置</h2></div><button className={`batch-toggle ${batchMode ? 'active' : ''}`} onClick={toggleBatchMode}>{batchMode ? '退出批量选择' : '＋ 批量占用'}</button></div>
 
         <nav className="level-tabs" aria-label="Freezer levels">
-          {levels.map((level, index) => <button key={level} className={activeLevel === level ? 'active' : ''} onClick={() => setActiveLevel(level)}>
-            <strong>{level}</strong><small>{index === 0 ? '顶部' : index === 3 ? '底部' : `第 ${index + 1} 层`}</small>
-            {normalizedQuery && matches.some((slot) => slot.level === level) && <em>{matches.filter((slot) => slot.level === level).length}</em>}
-          </button>)}
+          {levels.map((level, index) => <button key={level} className={activeLevel === level ? 'active' : ''} onClick={() => setActiveLevel(level)}><strong>{level}</strong><small>{index === 0 ? '顶部' : index === 3 ? '底部' : `第 ${index + 1} 层`}</small>{normalizedQuery && matches.some((slot) => slot.level === level) && <em>{matches.filter((slot) => slot.level === level).length}</em>}</button>)}
         </nav>
 
-        {batchMode && <div className="batch-banner"><div><strong>批量选择模式</strong><span>逐个点格子；也可以点每组上方的“D1–D4 全选”</span></div><b>{selectedIds.size} 个已选</b></div>}
+        {batchMode && <div className="batch-banner"><div><strong>批量选择模式</strong><span>可逐格选择、全选 D1–D4，或直接点 C1–C5 全选整列</span></div><b>{selectedIds.size} 个已选</b></div>}
 
         <div className="map-subheading"><div><strong>{activeLevel}</strong><span>{activeLevel === 'L1' ? '顶部大层' : activeLevel === 'L4' ? '底部大层' : `第 ${Number(activeLevel.slice(1))} 大层`}</span></div><div className="legend"><span className="available" /> 空位 <span className="occupied" /> 已占用 <span className="highlighted" /> 匹配 {batchMode && <><span className="selected-key" /> 已选择</>}</div></div>
-        <div className="column-labels" aria-hidden="true"><span />{columns.map((column) => <strong key={column}>{column}</strong>)}</div>
+
+        <div className={`column-labels ${batchMode ? 'batch-columns' : ''}`}><span />{columns.map((column) => {
+          const columnSlots = levelSlots.filter((slot) => slot.column === column);
+          const allSelected = columnSlots.length > 0 && columnSlots.every((slot) => selectedIds.has(slot.id));
+          return batchMode
+            ? <button key={column} className={allSelected ? 'active' : ''} onClick={() => toggleColumn(column)}><strong>{column}</strong><small>{allSelected ? '✓ 已全选' : '全选整列'}</small></button>
+            : <strong key={column}>{column}</strong>;
+        })}</div>
+
         <div className="shelf-list">
           {Array.from({ length: 5 }, (_, h) => `H${h + 1}`).map((height) => <section className="shelf-row" key={height}>
             <div className="shelf-label"><strong>{height}</strong><small>上 → 下</small></div>
@@ -241,8 +257,12 @@ export default function Home() {
               return <div className="depth-group" key={column}>
                 {batchMode && <button className={`select-depths ${groupSelected ? 'active' : ''}`} onClick={() => toggleDepthGroup(height, column)}>{groupSelected ? '✓ D1–D4' : 'D1–D4 全选'}</button>}
                 <div className="depth-stack">{groupSlots.map((slot) => <button
-                  key={slot.id} className={`${slot.occupant ? 'occupied' : ''} ${matchedIds.has(slot.id) ? 'matched' : ''} ${normalizedQuery && !matchedIds.has(slot.id) ? 'dimmed' : ''} ${selectedIds.has(slot.id) ? 'batch-selected' : ''}`}
-                  aria-label={`${slot.id}, ${slot.occupant || 'available'}`} title={`${slot.id}${slot.occupant ? ` · ${slot.occupant}` : ''}`} onClick={() => toggleSlot(slot)}
+                  key={slot.id}
+                  style={slot.occupant ? occupantStyle(slot.occupant) : undefined}
+                  className={`${slot.occupant ? 'occupied occupant-colored' : ''} ${matchedIds.has(slot.id) ? 'matched' : ''} ${normalizedQuery && !matchedIds.has(slot.id) ? 'dimmed' : ''} ${selectedIds.has(slot.id) ? 'batch-selected' : ''}`}
+                  aria-label={`${slot.id}, ${slot.occupant || 'available'}`}
+                  title={`${slot.id}${slot.occupant ? ` · ${slot.occupant}` : ''}`}
+                  onClick={() => toggleSlot(slot)}
                 >{selectedIds.has(slot.id) && <i>✓</i>}<span>{slot.depth}</span>{slot.occupant && <small>{slot.occupant}</small>}</button>)}</div>
               </div>;
             })}
@@ -261,7 +281,7 @@ export default function Home() {
           <dl><div><dt>大层 L</dt><dd>{selected.level}</dd></div><div><dt>列 C</dt><dd>{selected.column}</dd></div><div><dt>高度 H</dt><dd>{selected.height}</dd></div><div><dt>深度 D</dt><dd>{selected.depth}</dd></div></dl>
           <label htmlFor="occupant">占用者 / 类别</label><input id="occupant" value={occupantDraft} onChange={(event) => setOccupantDraft(event.target.value)} maxLength={80} placeholder="姓名 或 姓名 - Category" autoFocus />
           <p className="form-help">留空并保存，即可释放该位置。</p>
-          <label className="code-label" htmlFor="edit-code">实验室编辑码</label><input id="edit-code" value={editCode} onChange={(event) => setEditCode(event.target.value)} type="password" inputMode="numeric" placeholder="输入编辑码" />
+          <label className="code-label" htmlFor="edit-code">实验室编辑码</label><input className="code-input" id="edit-code" name="freezer-code" value={editCode} onChange={(event) => setEditCode(event.target.value)} type="text" inputMode="numeric" autoComplete="off" spellCheck={false} placeholder="输入编辑码" />
           {message && <p className="form-message" role="alert">{message}</p>}
           <div className="modal-actions"><button className="secondary" onClick={() => setSelected(null)}>取消</button><button className="primary" onClick={() => void saveSlot()} disabled={saving || !editCode}>{saving ? '正在保存…' : '保存'}</button></div>
         </section>
@@ -274,7 +294,7 @@ export default function Home() {
           <p className="batch-summary">这些位置会统一写入同一个占用者 / 类别。若其中已有占用信息，将被新的内容覆盖。</p>
           <label htmlFor="batch-occupant">占用者 / 类别</label><input id="batch-occupant" value={batchOccupant} onChange={(event) => setBatchOccupant(event.target.value)} maxLength={80} placeholder="例如：Wen - Virus" autoFocus />
           <p className="form-help">留空并保存，可以一次释放所有已选位置。</p>
-          <label className="code-label" htmlFor="batch-code">实验室编辑码</label><input id="batch-code" value={batchCode} onChange={(event) => setBatchCode(event.target.value)} type="password" inputMode="numeric" placeholder="输入编辑码" />
+          <label className="code-label" htmlFor="batch-code">实验室编辑码</label><input className="code-input" id="batch-code" name="freezer-batch-code" value={batchCode} onChange={(event) => setBatchCode(event.target.value)} type="text" inputMode="numeric" autoComplete="off" spellCheck={false} placeholder="输入编辑码" />
           {message && <p className="form-message" role="alert">{message}</p>}
           <div className="modal-actions"><button className="secondary" onClick={() => setBatchOpen(false)}>取消</button><button className="primary" onClick={() => void saveBatch()} disabled={saving || !batchCode}>{saving ? '正在保存…' : `保存 ${selectedIds.size} 个位置`}</button></div>
         </section>
