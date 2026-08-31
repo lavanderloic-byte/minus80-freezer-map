@@ -114,7 +114,7 @@ export default function Home() {
         <label htmlFor="search">搜索姓名或类别</label>
         <div className="search-box">
           <span aria-hidden="true">⌕</span>
-          <input id="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="例如：Wen、Virus、Tissue" autoComplete="off" />
+          <input id="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="例如：lyx、Virus、Tissue" autoComplete="off" />
           {query && <button onClick={() => setQuery('')} aria-label="Clear search">×</button>}
         </div>
         {!normalizedQuery && <p className="search-hint">输入姓名后，所有匹配位置会自动高亮</p>}
