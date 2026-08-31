@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './freezer-diagram.css';
+import EditCodeSession from './EditCodeSession';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL ?? 'http://localhost:3000'),
@@ -20,5 +21,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="zh-CN"><body>{children}</body></html>;
+  return <html lang="zh-CN"><body>{children}<EditCodeSession /></body></html>;
 }
